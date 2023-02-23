@@ -36,8 +36,7 @@ jobs:
         with:
           push: true
           tags: 
-            - ghcr.io/lucaguerra/test-repo-sign:latest
-            - ghcr.io/lucaguerra/test-repo-sign:${{ github.ref_name }}
+            - ghcr.io/lucaguerra/test-repo-sign:latest,ghcr.io/lucaguerra/test-repo-sign:${{ github.ref_name }}
 
       - name: Install cosign
         uses: sigstore/cosign-installer@main
