@@ -1,0 +1,52 @@
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+        # This permission is required to interact with GitHub OIDC token
+        id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v1.4.1'
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into ghcr.io
+        uses: docker/login-action@master
+        with:
+          registry: ghcr.io
+          username: lucaguerra
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push container image
+        id: push-step
+        uses: docker/build-push-action@master
+        with:
+          push: true
+          tags: 
+            - ghcr.io/lucaguerra/test-repo-sign:latest
+            - ghcr.io/lucaguerra/test-repo-sign:${{ github.ref_name }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: v1.13.1
+
+      - name: Sign the container image
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: cosign sign ghcr.io/lucaguerra/test-repo-sign@${{ steps.push-step.outputs.digest }}
+
+    
