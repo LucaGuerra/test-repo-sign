@@ -35,8 +35,7 @@ jobs:
         uses: docker/build-push-action@master
         with:
           push: true
-          tags: 
-            - ghcr.io/lucaguerra/test-repo-sign:latest,ghcr.io/lucaguerra/test-repo-sign:${{ github.ref_name }}
+          tags: "ghcr.io/lucaguerra/test-repo-sign:latest,ghcr.io/lucaguerra/test-repo-sign:${{ github.ref_name }}"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@main
